@@ -1,10 +1,10 @@
-# my_cpp_empty_project
+# Mesh merge
 
 ## how to use it
 ```bash
 # clone repository and submodule
 
-git clone --recursive https://github.com/StoneHappy/my_cpp_empty_project.git
+git clone --recursive https://github.com/StoneHappy/mesh_merge.git
 
 # create buid dir
 

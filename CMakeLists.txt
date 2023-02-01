@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-project(AppName VERSION 0.1.0)
+project(MeshMerge VERSION 0.1.0)
 
 
-option(ENABLE_TEST "Enable google test" OFF)
+option(ENABLE_TEST "Enable google test" ON)
 option(ENABLE_DOCS "Enable doxygen docs" ON)
 
 
@@ -42,6 +42,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${${PROJECT_NAME}_ROOT_DIR}/out/bin)
 # vendors dir
 set(VENDORS_DIR ${CMAKE_SOURCE_DIR}/src/Vendors)
 
+find_package(CGAL REQUIRED)
 
 add_subdirectory(src)
 
