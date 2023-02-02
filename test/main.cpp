@@ -4,3 +4,8 @@ TEST(ZIPPER, EAT_EDGE)
 {
 	EXPECT_NO_THROW(eat_edge());
 }
+
+TEST(ZIPPER, EAT_EDGE_MM)
+{
+	EXPECT_NO_THROW(eat_edge_mm());
+}
