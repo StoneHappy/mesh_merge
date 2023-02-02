@@ -122,9 +122,9 @@ namespace mm {
 		std::cout << "origin: " << vertices.size() << " " << facets.size() << std::endl;
 		CGAL::Polygon_mesh_processing::remove_isolated_points_in_polygon_soup(vertices, facets);
 		std::cout << "new: " << vertices.size() << " " << facets.size() << std::endl;
-		Surface_mesh meshtmp;
-		// 更新面索引的多边形汤
-		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, meshtmp);
+		//Surface_mesh meshtmp;
+		//// 更新面索引的多边形汤
+		//CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, meshtmp);
 	
 		/*CGAL::draw(meshtmp);
 		std::ofstream f("./out.ply", std::ios_base::binary);
