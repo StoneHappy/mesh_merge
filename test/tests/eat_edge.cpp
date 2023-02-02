@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <CGAL/draw_surface_mesh.h>
 #include <CGAL/boost/graph/Euler_operations.h>
+#include <CGAL/bounding_box.h>
 #include <vector>
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef Kernel::Point_3 Point_3;
@@ -65,7 +66,6 @@ struct Callback {
 
 		Face_descriptor fq = bq->f();
 		Triangle_3 tq = triangle(Q, fq);
-
 		if (do_intersect(tp, tq)) {
 			++(count);
 			Qf.push_back(fq);
@@ -134,8 +134,9 @@ int eat_edge()
 	Surface_Mesh mesh0;
 	Surface_Mesh mesh1;
 
-	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./polygon_mesh0.ply", mesh0);
-	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./polygon_mesh1.ply", mesh1);
+	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./mesh0.ply", mesh0);
+	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./mesh1.ply", mesh1);
+	CGAL::Side_of_triangle_mesh<Surface_Mesh, Kernel> inside(mesh0);
 
 	auto [Pf, Qf] = intersect(mesh0, mesh1);
 	for (auto f : Pf)
@@ -145,16 +146,22 @@ int eat_edge()
 	mesh0.collect_garbage();
 	std::vector<Point_3> vertices;
 	std::vector<Facet> facets;
+	CGAL::Polygon_mesh_processing::polygon_mesh_to_polygon_soup(mesh0, vertices, facets);
+	std::cout << "origin: " << vertices.size() << " " << facets.size() << std::endl;
+	CGAL::Polygon_mesh_processing::remove_isolated_points_in_polygon_soup(vertices, facets);
+	std::cout << "new: " << vertices.size() << " " << facets.size() << std::endl;
+	Surface_Mesh meshtmp;
+	CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, meshtmp);
 	/*Surface_Mesh meshtmp;
 	CGAL::Polygon_mesh_processing::polygon_mesh_to_polygon_soup(mesh0, vertices, facets);
 	CGAL::Polygon_mesh_processing::repair_polygon_soup(vertices, facets);
 	CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, meshtmp);*/
 
 	//CGAL::draw(mesh0);
-	CGAL::draw(mesh0);
+	CGAL::draw(meshtmp);
 	std::ofstream f("./out.ply", std::ios_base::binary);
 	CGAL::IO::set_binary_mode(f);
-	CGAL::IO::write_PLY(f, mesh0);
+	CGAL::IO::write_PLY(f, meshtmp);
 	f.close();
 	return 0;
 }
