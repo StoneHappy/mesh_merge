@@ -133,4 +133,41 @@ namespace mm {
 		f.close();*/
 		return 0;
 	}
+
+	int eatEdgeVertices(const Surface_mesh& mesh0, const Surface_mesh& mesh1, Point_set& outPoints)
+	{
+		auto [Pf, Qf] = intersect(mesh0, mesh1);
+
+		for (auto f : Pf)
+		{
+			auto hf = mesh0.halfedge(f);
+			auto vf = mesh0.vertices_around_face(hf);
+			for (auto v : vf)
+			{
+				outPoints.insert(mesh0.point(v));
+			}
+		}
+		
+		for (auto f : Qf)
+		{
+			auto hf = mesh1.halfedge(f);
+			auto vf = mesh1.vertices_around_face(hf);
+			for (auto v : vf)
+			{
+				outPoints.insert(mesh1.point(v));
+			}
+		}
+
+		//Surface_mesh meshtmp;
+		//// 更新面索引的多边形汤
+		//CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, meshtmp);
+
+		/*CGAL::draw(meshtmp);
+		std::ofstream f("./out.ply", std::ios_base::binary);
+		CGAL::IO::set_binary_mode(f);
+		CGAL::IO::write_PLY(f, meshtmp);
+		f.close();*/
+		return 0;
+	}
+
 }

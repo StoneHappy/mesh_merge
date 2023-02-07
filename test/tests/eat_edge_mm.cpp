@@ -17,3 +17,21 @@ int eat_edge_mm()
 	f.close();
 	return 0;
 }
+
+int eat_edge_v_mm()
+{
+	Surface_mesh mesh0;
+	Surface_mesh mesh1;
+
+	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./polygon_mesh0.ply", mesh0);
+	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./polygon_mesh1.ply", mesh1);
+
+	//Surface_mesh outmesh;
+	Point_set outPoints;
+	mm::eatEdgeVertices(mesh0, mesh1, outPoints);
+
+	std::ofstream f("./outPoints.ply", std::ios_base::binary);
+	f << outPoints;
+	f.close();
+	return 0;
+}

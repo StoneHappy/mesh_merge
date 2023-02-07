@@ -8,6 +8,7 @@
 #include <CGAL/draw_surface_mesh.h>
 #include <CGAL/boost/graph/Euler_operations.h>
 #include <CGAL/bounding_box.h>
+#include <CGAL/Point_set_3.h>
 #include <vector>
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef Kernel::Point_3 Point_3;
@@ -24,3 +25,6 @@ typedef CGAL::Timer Timer;
 typedef Surface_mesh::Face_index Face_descriptor;
 typedef Surface_mesh::Vertex_index Vertex_descriptor;
 typedef Surface_mesh::Halfedge_index Halfedge_descriptor;
+
+typedef CGAL::Point_set_3<Point_3> Point_set;
+
