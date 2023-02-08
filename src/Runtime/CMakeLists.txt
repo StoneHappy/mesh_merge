@@ -22,6 +22,7 @@ Qt5::Gui
 Qt5::Widgets
 Qt5::OpenGL
 CGAL::CGAL CGAL::Data
+Eigen3::Eigen
           )
 
 

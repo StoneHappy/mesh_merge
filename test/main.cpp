@@ -20,3 +20,8 @@ TEST(ZIPPER, MERGEMESH)
 {
 	EXPECT_NO_THROW(merge());
 }
+
+TEST(ZIPPER, RECONSTRUCTION)
+{
+	EXPECT_NO_THROW(reconstruction());
+}

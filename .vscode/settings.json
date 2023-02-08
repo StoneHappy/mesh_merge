@@ -10,7 +10,7 @@
         "-DMPFR_LIBRARIES=D:/Program Files/gmp/lib/libmpfr-4.lib",
         "-DMPFR_INCLUDE_DIR=D:/Program Files/gmp/include",
         "-DBoost_INCLUDE_DIR=D:/Program Files/boost_1_81_0",
-        "-DEIGEN3_INCLUDE_DIR=D:/Program Files/Eigen3",
+        "-DEigen3_DIR=D:/Program Files/Eigen3/share/eigen3/cmake",
         "-DDEBUG_ARGUES=--gtest_filter="
     ],
     // "cmake.generator": "Ninja",
