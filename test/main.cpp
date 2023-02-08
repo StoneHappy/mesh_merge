@@ -25,3 +25,9 @@ TEST(ZIPPER, RECONSTRUCTION)
 {
 	EXPECT_NO_THROW(reconstruction());
 }
+
+
+TEST(ZIPPER, ALL)
+{
+	EXPECT_NO_THROW(all());
+}

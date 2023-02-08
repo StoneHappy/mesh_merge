@@ -9,3 +9,5 @@ int merge();
 
 
 int reconstruction();
+
+int all();
