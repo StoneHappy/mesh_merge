@@ -1,6 +1,7 @@
 #include "EatEdge.h"
 
 #include <vector>
+#include <CGAL/bounding_box.h>
 namespace mm {
 
 	/// small helper to extract a triangle from a face
@@ -71,7 +72,7 @@ namespace mm {
 		P_box_ptr.reserve(P.number_of_faces());
 		Q_boxes.reserve(Q.number_of_faces());
 		Q_box_ptr.reserve(Q.number_of_faces());
-
+		
 		// build boxes and pointers to boxes
 		for (auto f : P.faces())
 			P_boxes.push_back(Box(f, P));
@@ -137,6 +138,10 @@ namespace mm {
 	int eatEdgeVertices(const Surface_mesh& mesh0, const Surface_mesh& mesh1, Point_set& outPoints)
 	{
 		auto [Pf, Qf] = intersect(mesh0, mesh1);
+		auto bbox0 = CGAL::bounding_box(mesh0.points().begin(), mesh0.points().end());
+		Kernel::Iso_cuboid_3 bbox1 = CGAL::bounding_box(mesh1.points().begin(), mesh1.points().end());
+		auto bbox_p = CGAL::intersection(bbox0, bbox1);
+		Kernel::Iso_cuboid_3 bbox = boost::get<Kernel::Iso_cuboid_3>(bbox_p.value());
 
 		for (auto f : Pf)
 		{
