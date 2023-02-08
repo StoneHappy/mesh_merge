@@ -26,6 +26,7 @@ namespace mm
 			facets.insert(facets.end(), fs.begin(), fs.end());
 		}
 		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, outMesh);
+		return 0;
 	}
 }
 

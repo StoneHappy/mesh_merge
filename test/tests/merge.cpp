@@ -20,4 +20,5 @@ int merge()
 	CGAL::IO::set_binary_mode(f);
 	CGAL::IO::write_PLY(f, outmeshs);
 	f.close();
+	return 0;
 }
