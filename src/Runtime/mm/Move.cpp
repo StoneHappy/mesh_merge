@@ -37,15 +37,7 @@ namespace mm
 		return 0;
 	}
 
-	static double getIntersectionVolume(const Surface_mesh& mesh0, const Surface_mesh& mesh1)
-	{
-		Kernel::Iso_cuboid_3 bbox1 = CGAL::bounding_box(mesh1.points().begin(), mesh1.points().end());
-		Kernel::Iso_cuboid_3 bbox0 = CGAL::bounding_box(mesh0.points().begin(), mesh0.points().end());
-
-		auto bbox_p = CGAL::intersection(bbox0, bbox1);
-		Kernel::Iso_cuboid_3 bbox = boost::get<Kernel::Iso_cuboid_3>(bbox_p.value());
-		return bbox.volume();
-	}
+	
 
 	static void moveBorderVertices(Surface_mesh& mesh, const std::vector<Vertex_descriptor>& vds, int direction, double step)
 	{
@@ -65,7 +57,53 @@ namespace mm
 				break;
 			}
 		}
+	}
+
+	/*void moveBorderVerticesDir(Surface_mesh& mesh, const std::vector<Vertex_descriptor>& vds, Kernel::Vector_3 direction, double step)
+	{
 		
+		for (size_t i = 0; i < vds.size(); i++)
+		{
+			auto&& p = mesh.point(vds[i]);
+				p += direction * step;
+			}
+		}
+	}*/
+
+	Kernel::Vector_3 getMovedir(const Surface_mesh& mesh0, const Surface_mesh& mesh1, const std::vector<Vertex_descriptor>& vd0, const std::vector<Vertex_descriptor>& vd1)
+	{
+		Kernel::Vector_3 direction;
+		double minlength = 0;
+		for (size_t i = 0; i < vd0.size(); i++)
+		{
+			for (size_t j = 0; j < vd1.size(); j++)
+			{
+				auto delta = mesh0.point(vd0[i]) - mesh1.point(vd1[j]);
+				auto length = delta.squared_length();
+				if (length < minlength)
+				{
+					minlength = length;
+					direction = delta;
+				}
+			}
+		}
+
+		return { 0, 1, 0 };
+
+		if (direction.x() >= direction.y() && direction.x() >= direction.z()) return { 1, 0, 0 };
+		if (direction.y() >= direction.x() && direction.y() >= direction.z()) return { 0, 1, 0 };
+		if (direction.z() >= direction.x() && direction.z() >= direction.y()) return { 0, 0, 1 };
+		return direction;
+	}
+
+	double getIntersectionVolume(const Surface_mesh& mesh0, const Surface_mesh& mesh1)
+	{
+		Kernel::Iso_cuboid_3 bbox1 = CGAL::bounding_box(mesh1.points().begin(), mesh1.points().end());
+		Kernel::Iso_cuboid_3 bbox0 = CGAL::bounding_box(mesh0.points().begin(), mesh0.points().end());
+
+		auto bbox_p = CGAL::intersection(bbox0, bbox1);
+		Kernel::Iso_cuboid_3 bbox = boost::get<Kernel::Iso_cuboid_3>(bbox_p.value());
+		return bbox.volume();
 	}
 
 	int MovePoint2Middle(Surface_mesh& mesh0, Surface_mesh& mesh1, const std::vector<Vertex_descriptor>& vd0, const std::vector<Vertex_descriptor>& vd1)
@@ -90,9 +128,31 @@ namespace mm
 			points0, 2
 			);
 
-		double spacemin = (spacing0 + spacing1) / 8;
+		double spacemin = (spacing0 + spacing1) / 100.0;
 
-		double volume = getIntersectionVolume(mesh0, mesh1);
+		auto volume = getIntersectionVolume(mesh0, mesh1);
+		auto dir = getMovedir(mesh0, mesh1, vd0, vd1);
+		
+		while (volume != 0)
+		{
+			for (size_t i = 0; i < vd0.size(); i++)
+			{
+				auto&& p = mesh0.point(vd0[i]);
+				p += dir * spacemin;
+			}
+
+			for (size_t i = 0; i < vd1.size(); i++)
+			{
+				auto&& p = mesh1.point(vd1[i]);
+				p -= dir * spacemin;
+			}
+			auto delta = getIntersectionVolume(mesh0, mesh1) - volume;
+
+			if (delta >= 0) break;
+
+			volume = getIntersectionVolume(mesh0, mesh1);
+		}
+
 		return 0;
 	}
 }
