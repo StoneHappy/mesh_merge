@@ -11,6 +11,8 @@ int merge();
 int reconstruction();
 int reconstruction_border();
 
+int moveMeshBorder();
+
 int all();
 
 int get_border_v();

@@ -40,3 +40,8 @@ TEST(ZIPPER, ALL)
 {
 	EXPECT_NO_THROW(all());
 }
+
+TEST(ZIPPER, MOVE_MESH_BORDER_V)
+{
+	EXPECT_NO_THROW(moveMeshBorder());
+}
