@@ -11,3 +11,5 @@ int merge();
 int reconstruction();
 
 int all();
+
+int get_border_v();
