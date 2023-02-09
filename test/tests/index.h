@@ -9,6 +9,7 @@ int merge();
 
 
 int reconstruction();
+int reconstruction_border();
 
 int all();
 

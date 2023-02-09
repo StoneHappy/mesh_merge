@@ -5,8 +5,8 @@ int get_border_v()
 	Surface_mesh mesh0;
 	Surface_mesh mesh1;
 
-	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./polygon_mesh0.ply", mesh0);
-	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./polygon_mesh1.ply", mesh1);
+	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./mesh0.ply", mesh0);
+	CGAL::Polygon_mesh_processing::IO::read_polygon_mesh("./mesh1.ply", mesh1);
 	std::vector<Vertex_descriptor> vd0, vd1;
 	mm::GetIntersectionBorderPoints(mesh0, mesh1, vd0, vd1);
 

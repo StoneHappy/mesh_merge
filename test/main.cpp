@@ -26,6 +26,11 @@ TEST(ZIPPER, RECONSTRUCTION)
 	EXPECT_NO_THROW(reconstruction());
 }
 
+TEST(ZIPPER, RECONSTRUCTION_BORDER)
+{
+	EXPECT_NO_THROW(reconstruction_border());
+}
+
 TEST(ZIPPER, GET_BORDER_V)
 {
 	EXPECT_NO_THROW(get_border_v());
