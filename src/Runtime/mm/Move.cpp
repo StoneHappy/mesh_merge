@@ -106,6 +106,33 @@ namespace mm
 		return bbox.volume();
 	}
 
+	static Triangle_3 triangle(const Surface_mesh& sm, Face_descriptor f)
+	{
+		Halfedge_descriptor hf = sm.halfedge(f);
+		Point_3 a = sm.point(sm.target(hf));
+		hf = sm.next(hf);
+		Point_3 b = sm.point(sm.target(hf));
+		hf = sm.next(hf);
+		Point_3 c = sm.point(sm.target(hf));
+		hf = sm.next(hf);
+		return Triangle_3(a, b, c);
+	}
+
+	bool isInterV2Mesh(const Surface_mesh& mesh0, const Surface_mesh& mesh1, const Vertex_descriptor& currentvd, const std::vector<Vertex_descriptor>& vd1)
+	{
+		auto point =mesh0.point(currentvd);
+		
+		for (auto&& f1 : mesh1.faces())
+		{
+			auto tr1 = triangle(mesh1, f1);
+			Kernel::Iso_cuboid_3 bbox = tr1.bbox();
+
+			if (!bbox.has_on_unbounded_side(point)) return true;
+		}
+
+		return false;
+	}
+
 	int MovePoint2Middle(Surface_mesh& mesh0, Surface_mesh& mesh1, const std::vector<Vertex_descriptor>& vd0, const std::vector<Vertex_descriptor>& vd1)
 	{
 		// 计算点的平均距离
@@ -133,26 +160,34 @@ namespace mm
 		auto volume = getIntersectionVolume(mesh0, mesh1);
 		auto dir = getMovedir(mesh0, mesh1, vd0, vd1);
 		
-		while (volume != 0)
+		bool isbreak = false;
+		int maxtime = 0;
+		
+		while (!isbreak != 0 && maxtime < 10000)
 		{
+			isbreak = true;
 			for (size_t i = 0; i < vd0.size(); i++)
 			{
-				auto&& p = mesh0.point(vd0[i]);
-				p += dir * spacemin;
+				if (isInterV2Mesh(mesh0, mesh1, vd0[i], vd1))
+				{
+					isbreak = false;
+					auto&& p = mesh0.point(vd0[i]);
+					p += dir * spacemin;
+				}
 			}
 
 			for (size_t i = 0; i < vd1.size(); i++)
 			{
-				auto&& p = mesh1.point(vd1[i]);
-				p -= dir * spacemin;
+				if (isInterV2Mesh(mesh1, mesh0, vd1[i], vd0))
+				{
+					isbreak = false;
+					auto&& p = mesh1.point(vd1[i]);
+					p -= dir * spacemin;
+				}
 			}
-			auto delta = getIntersectionVolume(mesh0, mesh1) - volume;
-
-			if (delta >= 0) break;
-
-			volume = getIntersectionVolume(mesh0, mesh1);
+			maxtime++;
 		}
-
+		std::cout << "maxtime: " << maxtime << std::endl;
 		return 0;
 	}
 }
