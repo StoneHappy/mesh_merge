@@ -72,10 +72,15 @@ namespace mm
 
 	Kernel::Vector_3 getMovedir(const Surface_mesh& mesh0, const Surface_mesh& mesh1, const std::vector<Vertex_descriptor>& vd0, const std::vector<Vertex_descriptor>& vd1)
 	{
-		Kernel::Vector_3 direction;
-		double minlength = 0;
+		std::vector<Kernel::Vector_3> directions;
+		directions.resize(vd0.size());
+
+		double minlength = 10000000000.0;
+		
 		for (size_t i = 0; i < vd0.size(); i++)
 		{
+			minlength = 10000000000.0;
+			Kernel::Vector_3 mindir;
 			for (size_t j = 0; j < vd1.size(); j++)
 			{
 				auto delta = mesh0.point(vd0[i]) - mesh1.point(vd1[j]);
@@ -83,17 +88,47 @@ namespace mm
 				if (length < minlength)
 				{
 					minlength = length;
-					direction = delta;
+					mindir = delta;
 				}
+			}
+			directions[i] = mindir;
+		}
+		int x = 0, y = 0, z = 0;
+		for (auto&& dir : directions)
+		{
+			if (dir.x() >= dir.y() && dir.x() >= dir.z())
+			{
+				x++;
+			}
+			else if(dir.y() >= dir.z())
+			{
+				y++;
+			}
+			else
+			{
+				z++;
 			}
 		}
 
-		return { 0, 1, 0 };
-
-		if (direction.x() >= direction.y() && direction.x() >= direction.z()) return { 1, 0, 0 };
-		if (direction.y() >= direction.x() && direction.y() >= direction.z()) return { 0, 1, 0 };
-		if (direction.z() >= direction.x() && direction.z() >= direction.y()) return { 0, 0, 1 };
-		return direction;
+		if (x >= y && x >= z)
+		{
+			x = 1;
+			y = 0;
+			z = 0;
+		}
+		else if( y >= z )
+		{
+			x = 0;
+			y = 1;
+			z = 0;
+		}
+		else
+		{
+			x = 0;
+			y = 0;
+			z = 1;
+		}
+		return  { 0, 1, 0 };
 	}
 
 	double getIntersectionVolume(const Surface_mesh& mesh0, const Surface_mesh& mesh1)
@@ -126,10 +161,9 @@ namespace mm
 		{
 			auto tr1 = triangle(mesh1, f1);
 			Kernel::Iso_cuboid_3 bbox = tr1.bbox();
-
 			if (!bbox.has_on_unbounded_side(point)) return true;
 		}
-
+	
 		return false;
 	}
 
@@ -155,24 +189,26 @@ namespace mm
 			points0, 2
 			);
 
-		double spacemin = (spacing0 + spacing1) / 100.0;
+		double spacemin = (spacing0 + spacing1) / 50.0;
 
 		auto volume = getIntersectionVolume(mesh0, mesh1);
-		auto dir = getMovedir(mesh0, mesh1, vd0, vd1);
+		auto dir0 = getMovedir(mesh0, mesh1, vd0, vd1);
+		//auto dir1 = getMovedir(mesh1, mesh0, vd1, vd0);
 		
 		bool isbreak = false;
 		int maxtime = 0;
-		
-		while (!isbreak != 0 && maxtime < 10000)
+
+		while (!isbreak != 0 && maxtime < 100)
 		{
 			isbreak = true;
 			for (size_t i = 0; i < vd0.size(); i++)
 			{
+				
 				if (isInterV2Mesh(mesh0, mesh1, vd0[i], vd1))
 				{
 					isbreak = false;
 					auto&& p = mesh0.point(vd0[i]);
-					p += dir * spacemin;
+					p += dir0 * spacemin;
 				}
 			}
 
@@ -182,7 +218,7 @@ namespace mm
 				{
 					isbreak = false;
 					auto&& p = mesh1.point(vd1[i]);
-					p -= dir * spacemin;
+					p -= dir0* spacemin;
 				}
 			}
 			maxtime++;
