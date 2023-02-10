@@ -111,6 +111,8 @@ namespace mm
 		}
 
 		Surface_mesh mmm;
+		std::reverse(middleface.begin(), middleface.end());
+		//middleface.reserve();
 		facets.insert(facets.end(), middleface.begin(), middleface.end());
 		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, outMesh);
 		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, middleface, mmm);
