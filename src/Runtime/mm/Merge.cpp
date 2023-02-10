@@ -77,7 +77,7 @@ namespace mm
 
 		::mm::Reconstruction(points, middleMesh);
 
-		std::vector<Facet> facets;
+		std::vector<Facet> facets, middleface;
 		std::vector<Point_3> vertices;
 		std::vector<Facet> fs0, fs1;
 		std::vector<Point_3> vs0, vs1;
@@ -106,10 +106,18 @@ namespace mm
 				i++;
 			}
 			Facet newface = { indexs[0], indexs[1], indexs[2] };
-			facets.push_back(newface);
+			//facets.push_back(newface);
+			middleface.push_back(newface);
 		}
-		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, outMesh);
 
+		Surface_mesh mmm;
+		facets.insert(facets.end(), middleface.begin(), middleface.end());
+		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, outMesh);
+		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, middleface, mmm);
+		std::ofstream f1("./testMiddleMesh.ply", std::ios_base::binary);
+		CGAL::IO::set_binary_mode(f1);
+		CGAL::IO::write_PLY(f1, mmm);
+		f1.close();
 		return 0;
 	}
 }
