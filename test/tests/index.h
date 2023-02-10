@@ -6,7 +6,7 @@ int eat_edge_mm();
 int eat_edge_v_mm();
 
 int merge();
-
+int merge_overlap();
 
 int reconstruction();
 int reconstruction_border();

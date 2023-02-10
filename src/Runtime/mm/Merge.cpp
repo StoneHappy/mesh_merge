@@ -48,6 +48,21 @@ namespace mm
 			ps1.insert(mesh1.point(vd1[i]));
 		}
 
+		std::vector<int> combineVD;
+		std::vector<int> VDindex0, VDindex1;
+
+		for (auto v0 : vd0)
+		{
+			VDindex0.push_back(mesh0.target(mesh0.halfedge(v0)));
+		}
+		
+		for (auto v1 : vd1)
+		{
+			VDindex1.push_back(mesh1.target(mesh1.halfedge(v1)) + vd0.size());
+		}
+		combineVD.insert(combineVD.end(), VDindex0.begin(), VDindex0.end());
+		combineVD.insert(combineVD.end(), VDindex1.begin(), VDindex1.end());
+
 		Surface_mesh middleMesh;
 
 		Point_set points;
@@ -72,17 +87,20 @@ namespace mm
 
 		CGAL::Polygon_mesh_processing::polygon_mesh_to_polygon_soup(mesh1, vs1, fs1);
 		vertices.insert(vertices.end(), vs1.begin(), vs1.end());
+		for (auto&& face : fs1)
+		{
+			face[0] += vs0.size();
+			face[1] += vs0.size();
+			face[2] += vs0.size();
+		}
 		facets.insert(facets.end(), fs1.begin(), fs1.end());
 
+
+		std::vector<Facet> middlefacets;
+		std::vector<Point_3> middlevertices;
+		CGAL::Polygon_mesh_processing::polygon_mesh_to_polygon_soup(middleMesh, middlevertices, middlefacets);
+
 		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, outMesh);
-
-		Vertex_descriptor v0, v1, v2;
-
-		outMesh.add_face(v0, v0, v0);
-		for (auto&& f : middleMesh.faces())
-		{
-
-		}
 
 		return 0;
 	}
