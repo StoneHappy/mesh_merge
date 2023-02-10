@@ -96,11 +96,11 @@ namespace mm
 		int x = 0, y = 0, z = 0;
 		for (auto&& dir : directions)
 		{
-			if (dir.x() >= dir.y() && dir.x() >= dir.z())
+			if (abs(dir.x()) >= abs(dir.y()) && abs(dir.x()) >= abs(dir.z()))
 			{
 				x++;
 			}
-			else if(dir.y() >= dir.z())
+			else if(abs(dir.y()) >= abs(dir.z()))
 			{
 				y++;
 			}
@@ -128,7 +128,7 @@ namespace mm
 			y = 0;
 			z = 1;
 		}
-		return  { 0, 1, 0 };
+		return  { x,  y, z };
 	}
 
 	double getIntersectionVolume(const Surface_mesh& mesh0, const Surface_mesh& mesh1)
