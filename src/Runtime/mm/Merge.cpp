@@ -58,7 +58,7 @@ namespace mm
 		
 		for (auto v1 : vd1)
 		{
-			VDindex1.push_back(mesh1.target(mesh1.halfedge(v1)) + vd0.size());
+			VDindex1.push_back(mesh1.target(mesh1.halfedge(v1)) + mesh0.number_of_vertices());
 		}
 		combineVD.insert(combineVD.end(), VDindex0.begin(), VDindex0.end());
 		combineVD.insert(combineVD.end(), VDindex1.begin(), VDindex1.end());
@@ -95,11 +95,19 @@ namespace mm
 		}
 		facets.insert(facets.end(), fs1.begin(), fs1.end());
 
-
-		std::vector<Facet> middlefacets;
-		std::vector<Point_3> middlevertices;
-		CGAL::Polygon_mesh_processing::polygon_mesh_to_polygon_soup(middleMesh, middlevertices, middlefacets);
-
+		for (auto&& f : middleMesh.faces())
+		{
+			auto vs = middleMesh.vertices_around_face(middleMesh.halfedge(f));
+			std::array<int, 3> indexs;
+			int i = 0;
+			for (auto&& v : vs)
+			{
+				indexs[i] = combineVD[middleMesh.target(middleMesh.halfedge(v))];
+				i++;
+			}
+			Facet newface = { indexs[0], indexs[1], indexs[2] };
+			facets.push_back(newface);
+		}
 		CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(vertices, facets, outMesh);
 
 		return 0;
