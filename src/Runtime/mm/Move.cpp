@@ -4,6 +4,7 @@ namespace mm
 {
 	int GetIntersectionBorderPoints(const Surface_mesh& mesh0, const Surface_mesh& mesh1, std::vector<Vertex_descriptor>& vd0, std::vector<Vertex_descriptor>& vd1)
 	{
+#if 0
 		Kernel::Iso_cuboid_3 bbox1 = CGAL::bounding_box(mesh1.points().begin(), mesh1.points().end());
 		Kernel::Iso_cuboid_3 bbox0 = CGAL::bounding_box(mesh0.points().begin(), mesh0.points().end());
 
@@ -17,7 +18,7 @@ namespace mm
 
 
 			auto v0 = mesh0.vertex(e, 0);
-			auto v1 = mesh0.vertex(e, 0);
+			auto v1 = mesh0.vertex(e, 1);
 
 			if (mesh0.is_border(v0) && !bbox.has_on_unbounded_side(mesh0.point(v0))) vd0.push_back(v0);
 			if (mesh0.is_border(v1) && !bbox.has_on_unbounded_side(mesh0.point(v1))) vd0.push_back(v1);
@@ -28,11 +29,29 @@ namespace mm
 			if (!mesh1.is_border(e)) continue;
 
 			auto v0 = mesh1.vertex(e, 0);
-			auto v1 = mesh1.vertex(e, 0);
+			auto v1 = mesh1.vertex(e, 1);
 
 			if (mesh1.is_border(v0) && !bbox.has_on_unbounded_side(mesh1.point(v0))) vd1.push_back(v0);
 			if (mesh1.is_border(v1) && !bbox.has_on_unbounded_side(mesh1.point(v1))) vd1.push_back(v1);
 		}
+#endif
+		for (auto&& v0 : mesh0.vertices())
+		{
+			if(!mesh0.is_border(v0)) continue;
+			for (auto&& v1 : mesh1.vertices())
+			{
+				if (!mesh1.is_border(v1)) continue;
+
+				Kernel::Vector_3 dir = mesh0.point(v0) - mesh1.point(v1);
+				if (sqrt(dir.squared_length()) <= 0.2)
+				{
+					vd0.push_back(v0);
+					vd1.push_back(v1);
+				}
+			}
+		}
+
+		
 
 		return 0;
 	}
@@ -128,7 +147,7 @@ namespace mm
 			y = 0;
 			z = 1;
 		}
-		return  { x,  y, z };
+		return  { 0,  1, 0 };
 	}
 
 	double getIntersectionVolume(const Surface_mesh& mesh0, const Surface_mesh& mesh1)
@@ -198,32 +217,51 @@ namespace mm
 		bool isbreak = false;
 		int maxtime = 0;
 
-		while (!isbreak != 0 && maxtime < 100)
+		for (size_t i = 0; i < vd0.size(); i++)
 		{
-			isbreak = true;
-			for (size_t i = 0; i < vd0.size(); i++)
-			{
-				
-				if (isInterV2Mesh(mesh0, mesh1, vd0[i], vd1))
-				{
-					isbreak = false;
-					auto&& p = mesh0.point(vd0[i]);
-					p += dir0 * spacemin;
-				}
-			}
-
-			for (size_t i = 0; i < vd1.size(); i++)
-			{
-				if (isInterV2Mesh(mesh1, mesh0, vd1[i], vd0))
-				{
-					isbreak = false;
-					auto&& p = mesh1.point(vd1[i]);
-					p -= dir0* spacemin;
-				}
-			}
-			maxtime++;
+			auto&& p0 = mesh0.point(vd0[i]);
+			auto&& p1 = mesh1.point(vd1[i]);
+			auto dir = p1 - p0;
+			p0 += (dir * 0.55);
+			p1 += (-dir * 0.55);
 		}
-		std::cout << "maxtime: " << maxtime << std::endl;
+
+	/*	for (size_t i = 0; i < vd1.size(); i++)
+		{
+			if (isInterV2Mesh(mesh1, mesh0, vd1[i], vd0))
+			{
+				isbreak = false;
+				auto&& p = mesh1.point(vd1[i]);
+				p -= dir0 * spacemin;
+			}
+		}*/
+
+		//while (!isbreak != 0 && maxtime < 100)
+		//{
+		//	isbreak = true;
+		//	for (size_t i = 0; i < vd0.size(); i++)
+		//	{
+		//		
+		//		if (isInterV2Mesh(mesh0, mesh1, vd0[i], vd1))
+		//		{
+		//			isbreak = false;
+		//			auto&& p = mesh0.point(vd0[i]);
+		//			p += dir0 * spacemin;
+		//		}
+		//	}
+
+		//	for (size_t i = 0; i < vd1.size(); i++)
+		//	{
+		//		if (isInterV2Mesh(mesh1, mesh0, vd1[i], vd0))
+		//		{
+		//			isbreak = false;
+		//			auto&& p = mesh1.point(vd1[i]);
+		//			p -= dir0* spacemin;
+		//		}
+		//	}
+		//	maxtime++;
+		//}
+		//std::cout << "maxtime: " << maxtime << std::endl;
 		return 0;
 	}
 }

@@ -45,10 +45,10 @@ int merge_overlap()
 	//Surface_mesh outmeshs;
 	//mm::Merge(meshs, outmeshs);
 
-	std::ofstream f("./mergeOverlapMesh.ply", std::ios_base::binary);
+	/*std::ofstream f("./mergeOverlapMesh.ply", std::ios_base::binary);
 	CGAL::IO::set_binary_mode(f);
 	CGAL::IO::write_PLY(f, meshs);
-	f.close();
+	f.close();*/
 
 	std::ofstream f0("./out_move_border_mesh0.ply", std::ios_base::binary);
 	CGAL::IO::set_binary_mode(f0);
